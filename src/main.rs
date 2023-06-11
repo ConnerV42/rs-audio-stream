@@ -1,6 +1,6 @@
 use std::fmt;
 use std::error::Error;
-use warp::{Filter, fs::dir, reject::Reject};
+use warp::{Filter, reject::Reject};
 use warp_range::{filter_range, get_range};
 
 #[derive(Debug)]
@@ -17,11 +17,11 @@ impl Reject for InvalidFormatError {}
 
 #[tokio::main]
 async fn main() {
-    let _cors = warp::cors()
+    let cors = warp::cors()
         .allow_any_origin()
         .build();
 
-    let route_get_range =
+    let audio_route =
         warp::path!("audio" / String / String) // Matches "/audio/<name>/<format>"
         .and(filter_range())
         .and_then(|name: String, format: String, range_header: Option<String>| async move {
@@ -31,15 +31,11 @@ async fn main() {
                 "mp3" => get_range(range_header, &file_path, "audio/mpeg").await,
                 _ => Err(warp::reject::custom(InvalidFormatError)),
             }
-        });
-
-    let route_static = dir(".");
-    
-    let routes = route_get_range
-        .or(route_static);
+        })
+        .with(cors);
 
     println!("Server started at http://localhost:8080");
-    warp::serve(routes)
+    warp::serve(audio_route)
         .run(([127, 0, 0, 1], 8080))
         .await;
 }

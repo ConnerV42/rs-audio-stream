@@ -17,31 +17,23 @@
 
   <main class="p-5">
     <section id="section1" class="p-5 bg-white shadow-md mt-5">
-      <h2 class="text-2xl font-bold text-blue-500 mb-4">MP3</h2>
+      <h2 class="text-2xl font-bold text-blue-500 mb-4">Audio Player</h2>
 
       <div class="flex items-center space-x-4">
-        <input class="px-2 py-1" id="mp3-input" type="text" placeholder="Enter filename" />
+        <input class="px-2 py-1" id="filename-input" type="text" placeholder="Enter a file name" />
+
+        <select id="format-select" class="px-2 py-1">
+          <option value="mp3">MP3</option>
+          <option value="wav">WAV</option>
+        </select>
+
         <button
-          onclick="playAudio('mp3', 'mp3-input', this)"
+          onclick="playAudio('filename-input', 'format-select', this)"
           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          Stream Audio
+          Stream
         </button>
-        <audio class="ml-4" controls></audio>
-      </div>
-    </section>
 
-    <section id="section1" class="p-5 bg-white shadow-md mt-5">
-      <h2 class="text-2xl font-bold text-blue-500 mb-4">WAV</h2>
-
-      <div class="flex items-center space-x-4">
-        <input class="px-2 py-1" id="wav-input" type="text" placeholder="Enter filename" />
-        <button
-          onclick="playAudio('wav', 'wav-input', this)"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Stream Audio
-        </button>
         <audio class="ml-4" controls></audio>
       </div>
     </section>
@@ -52,10 +44,11 @@
   </footer>
 
   <script>
-    function playAudio(format, inputId, button) {
+    function playAudio(inputId, selectId, button) {
       const filename = document.getElementById(inputId).value;
+      const format = document.getElementById(selectId).value;
       const audioPlayer = button.nextElementSibling;
-      const url = `http://localhost:8080/audio/${format}/${filename}`;
+      const url = `http://localhost:8080/audio/${filename}/${format}`;
 
       audioPlayer.src = url;
       audioPlayer.play()
@@ -67,3 +60,4 @@
 </body>
 
 </html>
+
