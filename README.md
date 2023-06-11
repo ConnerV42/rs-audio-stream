@@ -8,8 +8,8 @@ rs-audio-stream
 3. Go to:
 ```
 http://localhost:8000 (UI)
-http://localhost:8080/audio/wav/{audioFileName}
-http://localhost:8080/audio/mp3/{audioFileName}
+http://localhost:8080/audio/{audioFileName}/wav
+http://localhost:8080/audio/{audioFileName}/mp3
 ```
 
 Run `cargo doc --open` to view docs
