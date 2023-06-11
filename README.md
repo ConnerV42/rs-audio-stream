@@ -6,7 +6,7 @@ POC for audio server
 2. `find /opt/homebrew -name libmp3lame.dylibi`
 3. Paste in your build.rs
 4. `cargo run` to start the server
-5. Hit http://localhost:8080
+5. `cd` into `site` and run `python -m http.server 8000`
 
 Probably will switch from LAME to ffmpeg at some point
 

@@ -142,10 +142,30 @@ async fn stream_audio(format: String) -> Result<Box<dyn warp::Reply>, Infallible
 
 #[tokio::main] // https://tokio.rs/
 async fn main() {
+    let cors = warp::cors()
+        .allow_any_origin()
+        .allow_headers(vec![
+            "User-Agent",
+            "Hx-Current-Url",
+            "Hx-Request",
+            "Referer",
+            "Sec-Ch-Ua",
+            "Sec-Ch-Ua-Mobile",
+            "Sec-Ch-Ua-Platform",
+            "Content-Type",
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Methods",
+            "Access-Control-Allow-Headers",
+            "Access-Control-Max-Age",
+            "Access-Control-Allow-Credentials",
+        ])
+        .allow_methods(vec!["GET", "OPTIONS"]).build();
+
     let audio_route = warp::path("audio")
         .and(warp::get())
         .and(warp::path::param())
-        .and_then(stream_audio);
+        .and_then(stream_audio)
+        .with(cors);
 
     println!("Server started at http://localhost:8080");
     warp::serve(audio_route).run(([127, 0, 0, 1], 8080)).await;
