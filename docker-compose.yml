@@ -1,0 +1,24 @@
+version: '3.3'
+
+services:
+  db:
+    image: postgres:15.3
+    platform: linux/amd64
+    restart: always
+    environment:
+      POSTGRES_DB: 'pgdb'
+      POSTGRES_PASSWORD_USER: 'postgres'
+      POSTGRES_PASSWORD: 'password'
+    ports:
+      # <Port exposed> : <MySQL Port running inside container>
+      - '3306:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+      # Where our data will be persisted
+    volumes:
+      - pgdb:/var/lib/postgres
+
+# Names our volume
+volumes:
+  pgdb:
