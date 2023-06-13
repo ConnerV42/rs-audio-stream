@@ -1,4 +1,4 @@
-rs-audio-stream
+# rs-audio-stream
 
 ## Run locally:
 
@@ -12,5 +12,9 @@ http://localhost:8080/audio/{audioFileName}/wav
 http://localhost:8080/audio/{audioFileName}/mp3
 ```
 
-Run `cargo doc --open` to view docs
+## Database
+- This POC uses a MySQL database, and [SQLx](https://github.com/launchbadge/sqlx) as a database interface library.
+
+## Additional Documentation
+- Run `cargo doc --open` to view docs
 
