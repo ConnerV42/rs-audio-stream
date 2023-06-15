@@ -4,21 +4,28 @@ services:
   db:
     image: postgres:15.3
     platform: linux/amd64
-    restart: always
-    environment:
-      POSTGRES_DB: 'pgdb'
-      POSTGRES_PASSWORD_USER: 'postgres'
-      POSTGRES_PASSWORD: 'password'
     ports:
-      # <Port exposed> : <MySQL Port running inside container>
-      - '3306:3306'
-    expose:
-      # Opens port 3306 on the container
-      - '3306'
-      # Where our data will be persisted
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: pgdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    restart: always
     volumes:
-      - pgdb:/var/lib/postgres
+      - postgres_data:/var/lib/postgresql/data
 
-# Names our volume
+  app:
+    build: .
+    ports:
+      - '8001:8001'
+    environment:
+      POSTGRES_DB: pgdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_PORT: 5432
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+      PATH: /usr/local/cargo/bin:$PATH
+    depends_on:
+      - db
 volumes:
-  pgdb:
+  postgres_data:
