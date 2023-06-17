@@ -4,6 +4,7 @@ set -eo pipefail
 
 if ! [ -x "$(command -v psql)" ]; then
   echo >&2 "Error: psql is not installed."
+  echo >&2 "Use: brew install postgresql (MacOS only)"
   exit 1
 fi
 
@@ -19,13 +20,15 @@ fi
 # Show env vars
 grep -v '^#' .env
 
-# Export env vars
+# Set environment variables that are included in the .env
 set -o allexport
 source .env
 set +o allexport
 
+# Bring up database and api
 docker-compose --env-file .env up -d
 
+# Ping database until it is up
 export PGPASSWORD="password"
 until psql -h "${POSTGRES_HOST}" -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -d "postgres" -c '\q'; do
     >&2 echo "***** Postgres is still unavailable - sleeping for 5 seconds *****"
@@ -35,8 +38,7 @@ done
 
 DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
 export DATABASE_URL
+echo $DATABASE_URL
 
 sqlx database create
 sqlx migrate run
-
-# Just gotta create the migration now, but that's for another day
