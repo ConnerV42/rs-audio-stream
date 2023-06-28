@@ -4,14 +4,14 @@ use serde::Deserialize;
 
 pub enum Environment {
     Local,
-    Production
+    Production,
 }
 
 impl Environment {
     pub fn as_str(&self) -> &'static str {
         match self {
             Environment::Local => "local",
-            Environment::Production => "production"
+            Environment::Production => "production",
         }
     }
 }
@@ -20,14 +20,13 @@ impl TryFrom<String> for Environment {
     type Error = String;
 
     fn try_from(s: String) -> Result<Self, Self::Error> {
-
         match s.to_lowercase().as_str() {
             "local" => Ok(Self::Local),
             "production" => Ok(Self::Production),
             other => Err(format!(
-                    "{} is not a supported environment. \
+                "{} is not a supported environment. \
                     Use either `local` or `production`.",
-                    other
+                other
             )),
         }
     }
@@ -79,8 +78,7 @@ impl DatabaseSettings {
 }
 
 pub fn get_configuration() -> Result<Settings, ConfigError> {
-    let base_path = std::env::current_dir()
-        .expect("Failed to determine the current directory");
+    let base_path = std::env::current_dir().expect("Failed to determine the current directory");
     let configuration_directory = base_path.join("configuration");
     let env: Environment = std::env::var("ENV")
         .unwrap_or_else(|_| "local".into())
@@ -88,12 +86,10 @@ pub fn get_configuration() -> Result<Settings, ConfigError> {
         .expect("Failed to parse ENV");
     let environment_filename = format!("{}.yaml", env.as_str());
     let settings = Config::builder()
-        .add_source(
-            File::from(configuration_directory.join("base.yaml"))
-        )
-        .add_source(
-            File::from(configuration_directory.join(environment_filename))
-        )
+        .add_source(File::from(configuration_directory.join("base.yaml")))
+        .add_source(File::from(
+            configuration_directory.join(environment_filename),
+        ))
         .build()?;
 
     settings.try_deserialize::<Settings>()
