@@ -25,8 +25,11 @@ set -o allexport
 source .env
 set +o allexport
 
-# Bring up database and api
-docker-compose --env-file .env up -d
+if [[ -z "${SKIP_DOCKER}" ]]
+then
+    # Bring up database and api
+    docker-compose --env-file .env up -d
+fi
 
 # Ping database until it is up
 export PGPASSWORD="password"
