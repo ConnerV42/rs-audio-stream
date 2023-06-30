@@ -19,8 +19,8 @@ async fn main() -> Result<(), std::io::Error> {
         "{}:{}",
         configuration.application.host, configuration.application.port,
     );
-    let listener = TcpListener::bind(address)?;
+    let listener = TcpListener::bind(&address)?;
 
-    println!("Server started!");
+    println!("Application running @ http://{}", address);
     run(listener, connection_pool)?.await
 }

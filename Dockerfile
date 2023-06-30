@@ -1,32 +1,38 @@
-# Choose a base image with Rust installed
-FROM rust:1.70.0 as builder
+FROM lukemathwalker/cargo-chef:latest-rust-1.70.0 AS chef
+WORKDIR /app
+RUN apt update && apt install lld clang -y
 
-WORKDIR /server
+FROM chef as planner
 
-RUN cargo install --version='~0.6' sqlx-cli --no-default-features --features rustls,postgres
+COPY . .
+# Create lockfile
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM chef AS builder
+COPY --from=planner /app/recipe.json /app/recipe.json 
+
+# Build app dependencies
+RUN cargo chef cook --release --recipe-path recipe.json
+COPY . .
+
+# Build app
 ENV SQLX_OFFLINE true
+RUN cargo build --release --bin audio_streamer
 
-COPY configuration /server/configuration
-COPY src /server/src
-COPY Cargo.lock Cargo.toml sqlx-data.json /server/
+FROM debian:bullseye-slim AS runtime
+WORKDIR /app
 
-RUN cargo build --release
-
-# Use a lighter base image for the final layer
-FROM debian:buster-slim
-
-# Install openssl and postgresql-client for runtime
-RUN apt-get update && apt-get install -y openssl postgresql-client && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /server
-
+# Install OpenSSL - it is dynamically linked by some of our dependencies
+# Install ca-certificates to verify TLS certificates when establishing HTTPS connections
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends openssl ca-certificates \
+    # Clean up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
 # Copy the binary from the builder stage
-COPY --from=builder /server/configuration /server/configuration
-COPY --from=builder /server/target/release/audio_streamer /server
-
-# Install the necessary certificates to make HTTPS requests
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-
+COPY --from=builder /app/target/release/audio_streamer /app
+COPY configuration configuration
 ENV ENV production
 CMD ["./audio_streamer"]
 
