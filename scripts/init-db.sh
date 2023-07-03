@@ -28,7 +28,7 @@ set +o allexport
 if [[ -z "${SKIP_DOCKER}" ]]
 then
     # Bring up database and api
-    docker-compose --env-file .env up -d
+    docker-compose --env-file .env up db -d
 fi
 
 # Ping database until it is up

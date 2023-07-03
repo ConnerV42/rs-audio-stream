@@ -1,12 +1,12 @@
 # rs-audio-stream
 
-## Running the API locally
+## Bring up the Database and run the API locally
 ```
 docker-compose up db
 cargo run
 ```
 
-- Run ./init.sh to standup docker-compose for postgres db connectivity
+- Run `./init-db.sh` to standup docker-compose for postgres db connectivity
 
 ### Routes
 - `health_check`:
@@ -18,8 +18,12 @@ curl -v `http://127.0.0.1:8000/health_check`
 curl -i -X POST -d 'email=thomas_mann@hotmail.com&name=Tom' \
     http://127.0.0.1:8000/subscriptions
 ```
+```
+curl -i -X POST -d 'email=thomas_mann@hotmail.com&name=Tom' \
+    https://audio-streamer.fly.dev/subscriptions
+```
 
-# Docker
+## Docker
 
 - Run the app and postgres database
 ```
@@ -39,14 +43,43 @@ docker run -p 8000:8000 audiostreamer
 ```
 
 ## Database
-- This POC uses a MySQL database, and [SQLx](https://github.com/launchbadge/sqlx) as a database interface library.
+- This application uses a Postgres database and [SQLx](https://github.com/launchbadge/sqlx).
 
-Generates query metadata to support offline compile-time verification.
-- `sqlx prepare -- --lib`
+- Generate query metadata to support offline compile-time verification in CI.
+```
+sqlx prepare -- --lib
+```
 
-# Tests
-- Run `cargo test`
+## Cargo
+- Run unit and integration tests:
+```
+cargo test
+```
+- Generate and view docs:
+```
+cargo doc --open
+```
 
-## Additional Documentation
-- Run `cargo doc --open` to view docs
+## Deploying through fly.io 
+
+- Build Dockerfile into imagei and deploy to production
+```
+fly deploy
+```
+
+- Set secrets directly in fly app:
+```
+fly secrets set DATABASE_URL=postgres://example.com/mydb 
+```
+
+### Locally run migrations against fly.io db:
+
+- Forward the server port to your local system with [fly proxy](https://fly.io/docs/postgres/connecting/connecting-with-flyctl/)
+```
+fly proxy 5432 -a audio-streamer-postgres
+```
+- Then, you should be able to run your migrations:
+```
+DATABASE_URL=postgres://postgres:<password>@localhost:5432 sqlx migrate run
+```
 
