@@ -1,4 +1,5 @@
 use audio_streamer::configuration::{get_configuration, DatabaseSettings};
+use audio_streamer::email_client::EmailClient;
 use audio_streamer::startup::run;
 use audio_streamer::telemetry::{get_subscriber, init_subscriber};
 use once_cell::sync::Lazy;
@@ -34,9 +35,20 @@ async fn spawn_app() -> TestApp {
     let address = format!("http://127.0.0.1:{}", port);
     let mut config = get_configuration().expect("Failed to read configuration.");
     config.database.database_name = Uuid::new_v4().to_string();
-
     let connection_pool = configure_database(&config.database).await;
-    let server = run(listener, connection_pool.clone()).expect("Failed to bind address");
+
+    let sender_email = config
+        .email_client
+        .sender()
+        .expect("Invalid sender email address");
+    let email_client = EmailClient::new(
+        config.email_client.base_url,
+        sender_email,
+        config.email_client.authorization_token,
+    );
+
+    let server =
+        run(listener, connection_pool.clone(), email_client).expect("Failed to bind address");
     let _ = tokio::spawn(server);
 
     TestApp {

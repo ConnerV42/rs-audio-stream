@@ -7,3 +7,7 @@ database:
   username: "postgres"
   password: "password"
   database_name: "postgres"
+email_client:
+  base_url: "http://localhost"
+  sender_email: "test@gmail.com"
+  authorization_token: "secret-token"
