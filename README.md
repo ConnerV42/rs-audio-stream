@@ -83,3 +83,10 @@ fly proxy 5432 -a audio-streamer-postgres
 DATABASE_URL=postgres://postgres:<password>@localhost:5432 sqlx migrate run
 ```
 
+## Running python server
+- cd into `site` and run
+```
+python -m http.server 8000
+```
+
+
