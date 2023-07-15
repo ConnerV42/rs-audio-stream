@@ -108,19 +108,8 @@ python -m http.server 8000
 ```
 
 ## OS considerations
-If you're running on Linux, you might see errors like the one below. This is due to a limit enforced by the OS on the maximum number of open#[tokio::test]
-async fn confirmations_without_token_are_rejected_with_a_400() {
-    // Arrange
-    let app = spawn_app().await;
-
-    // Act
-    let response = reqwest::get(&format!("{}/subscriptions/confirm", app.address))
-        .await
-        .unwrap();
-
-    // Assert
-    assert_eq!(response.status().as_u16(), 400);
-} file descriptors (including sockets) for each process.
+If you're running on Linux, you might see errors like the one below. This is due to a limit enforced by the OS on the maximum number of open
+file descriptors (including sockets) for each process.
 Given that we are running all tests as part of a single binary, we might be exceeding it. The limit is usually 1024, raise it to (e.g. `ulimit -n 10000`).
 ```
 thread 'actix-server worker 2' panicked at 'called `Result::unwrap()` on an `Err` value: Os { code: 24, kind: Uncategorized, message: "Too many open files" }'
