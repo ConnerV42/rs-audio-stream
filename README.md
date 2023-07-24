@@ -63,6 +63,12 @@ sqlx migrate add add_status_to_subscriptions
 ```
 cargo test
 ```
+- See detailed logs during test execution:
+```
+export RUST_LOG="sqlx=error,info"
+export TEST_LOG=enabled
+cargo t subscribe_fails_if_there_is_a_fatal_database_error | bunyan
+```
 - Generate and view docs:
 ```
 cargo doc --open

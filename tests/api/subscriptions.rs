@@ -123,7 +123,7 @@ async fn subscribe_fails_if_there_is_a_fatal_database_error() {
     let body = "name=Korra%20Verret&email=korra_verret%40gmail.com";
 
     // Sabotage the database
-    query!("ALTER TABLE subscription_tokens DROP COLUMN subscription_token;",)
+    query!("ALTER TABLE subscriptions DROP COLUMN email;",)
         .execute(&app.db_pool)
         .await
         .unwrap();
