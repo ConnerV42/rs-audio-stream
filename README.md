@@ -47,7 +47,7 @@ docker run -p 8000:8000 audiostreamer
 
 - Generate query metadata to support offline compile-time verification in CI.
 ```
-sqlx prepare -- --lib
+cargo sqlx prepare -- --lib
 ```
 - To create a new database migration file with sqlx:
 ```
@@ -105,12 +105,6 @@ fly proxy 5432 -a audio-streamer-postgres
 - Then, you should be able to run your migrations:
 ```
 DATABASE_URL=postgres://postgres:<password>@localhost:5432 sqlx migrate run
-```
-
-## Running python server
-- cd into `site` and run
-```
-python -m http.server 8000
 ```
 
 ## OS considerations
