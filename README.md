@@ -11,16 +11,24 @@ cargo run
 ### Routes
 - `health_check`:
 ```
-curl -v `http://127.0.0.1:8000/health_check`
+curl -v `http://127.0.0.1:8080/health_check`
 ```
 - `subscriptions`:
 ```
 curl -i -X POST -d 'email=thomas_mann@hotmail.com&name=Tom' \
-    http://127.0.0.1:8000/subscriptions
+    http://127.0.0.1:8080/subscriptions
 ```
 ```
 curl -i -X POST -d 'email=thomas_mann@hotmail.com&name=Tom' \
     https://audio-streamer.fly.dev/subscriptions
+```
+`login`:
+```
+http://127.0.0.1:8080/login
+```
+`home:`
+```
+http://127.0.0.1:8080
 ```
 
 ## Docker
@@ -39,7 +47,7 @@ docker build --tag audiostreamer .
 ```
 - Run image
 ```
-docker run -p 8000:8000 audiostreamer
+docker run -p 8080:8080 audiostreamer
 ```
 
 ## Postgres Database
@@ -68,6 +76,11 @@ cargo test
 export RUST_LOG="sqlx=error,info"
 export TEST_LOG=enabled
 cargo t subscribe_fails_if_there_is_a_fatal_database_error | bunyan
+```
+- Isolate and view elasped test execution time in milliseconds
+```
+export TEST_LOG=true
+cargo t --quiet --release non_existing_user_is_rejected | grep "HTTP REQUEST" | bunyan
 ```
 - Generate and view docs:
 ```
