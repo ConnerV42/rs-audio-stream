@@ -59,11 +59,17 @@ cargo sqlx prepare -- --lib
 ```
 - To create a new database migration file with sqlx:
 ```
-sqlx migrate add add_status_to_subscriptions
+sqlx migrate add $MIGRATION_FILE_NAME
 ```
 - To actually run the migrations against your local database:
 ```
 ./scripts/init-db.sh
+```
+
+## Redis Session Store
+- Start Redis locally via docker-compose
+```
+./scripts/init-redis.sh
 ```
 
 ## Cargo
