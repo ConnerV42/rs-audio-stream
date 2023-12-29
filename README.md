@@ -6,7 +6,8 @@ docker-compose up db
 cargo run
 ```
 
-- Run `./init-db.sh` to standup docker-compose for postgres db connectivity
+- Run `./scripts/init-db.sh` to standup docker-compose for postgres db connectivity
+- When running locally, you can log into the admin interface with username `admin` and password `everythinghastostartsomewhere`
 
 ### Routes
 - `health_check`:
@@ -132,4 +133,10 @@ file descriptors (including sockets) for each process.
 Given that we are running all tests as part of a single binary, we might be exceeding it. The limit is usually 1024, raise it to (e.g. `ulimit -n 10000`).
 ```
 thread 'actix-server worker 2' panicked at 'called `Result::unwrap()` on an `Err` value: Os { code: 24, kind: Uncategorized, message: "Too many open files" }'
+```
+
+## Connect to Postgres Database with psql
+```
+psql -h localhost -p 5432 -U postgres -d postgres
+SELECT * FROM users;
 ```
